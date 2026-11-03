@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Curio Store</title>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f5f6f8;--surface:#fff;--ink:#14171f;--muted:#667085;--line:#e3e6ec;--tile:#eceef3;--accent:#3a3fd1;--accent-ink:#fff;--ok:#15803d;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1116;--surface:#181b23;--ink:#eef0f5;--muted:#9aa3b5;--line:#2a2f3b;--tile:#222632;--accent:#8b90ff;--accent-ink:#101224;--ok:#4ade80;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0f1116;--surface:#181b23;--ink:#eef0f5;--muted:#9aa3b5;--line:#2a2f3b;--tile:#222632;--accent:#8b90ff;--accent-ink:#101224;--ok:#4ade80;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 15px/1.5 Manrope,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--surface);border-bottom:1px solid var(--line)}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--surface);z-index:10}
+.bar{max-width:1180px;margin:0 auto;padding:12px 20px;display:flex;align-items:center;gap:16px}
+.logo{font-weight:800;font-size:22px;letter-spacing:-.02em;margin:0}
+.search{flex:1;max-width:460px;margin-left:auto}
+.search input{width:100%;padding:10px 14px;border:1px solid var(--line);border-radius:10px;background:var(--bg)}
+.bagbtn{display:flex;align-items:center;gap:8px;padding:10px 16px;border:0;border-radius:10px;background:var(--accent);color:var(--accent-ink);font-weight:600}
+.bagbtn span{background:var(--accent-ink);color:var(--accent);border-radius:99px;min-width:22px;padding:0 6px;text-align:center;font-size:13px}
+main{max-width:1180px;margin:0 auto;padding:28px 20px 60px}
+.hero h1{font-size:clamp(28px,5vw,44px);line-height:1.1;letter-spacing:-.03em;margin:0 0 8px;font-weight:800}
+.hero p{margin:0;color:var(--muted);max-width:60ch}
+.offer{display:flex;flex-wrap:wrap;gap:10px;margin:18px 0 6px}
+.offer div{padding:8px 14px;border:1px solid var(--line);border-radius:10px;background:var(--surface);font-size:14px}
+.offer b{color:var(--ok)}
+.tabs{display:flex;gap:8px;overflow-x:auto;padding:16px 0;scrollbar-width:none}
+.tabs button{flex:none;padding:8px 16px;border:1px solid var(--line);border-radius:99px;background:var(--surface);font-weight:500}
+.tabs button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:18px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden;display:flex;flex-direction:column}
+.card .ph{aspect-ratio:4/5;background:var(--tile);overflow:hidden}
+.card img{width:100%;height:100%;object-fit:cover;display:block}
+.card .in{padding:12px 14px 14px;display:flex;flex-direction:column;gap:4px;flex:1}
+.card h3{margin:0;font-size:15px;font-weight:600;line-height:1.3}
+.card .cat{color:var(--muted);font-size:13px}
+.card .row{margin-top:auto;padding-top:10px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.price{font-weight:800;font-size:17px}
+.add{padding:8px 14px;border:1px solid var(--accent);background:transparent;color:var(--accent);border-radius:9px;font-weight:600}
+.add:hover{background:var(--accent);color:var(--accent-ink)}
+.empty{padding:50px 0;text-align:center;color:var(--muted)}
+.card .ph{border:0;padding:0;display:block;width:100%;cursor:pointer}
+.nm{border:0;background:none;padding:0;text-align:left;font-weight:600;font-size:inherit;line-height:inherit}
+.nm:hover{color:var(--accent)}
+.pd{position:fixed;inset:0;z-index:30;display:none;place-items:center;padding:16px;background:rgba(10,12,18,.6)}
+.pd.on{display:grid}
+.pp{background:var(--surface);border:1px solid var(--line);border-radius:16px;width:min(520px,100%);max-height:100%;overflow:hidden;display:flex;flex-direction:column}
+.pt{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid var(--line)}
+.pt h2{margin:0;font-size:17px;line-height:1.3}
+.sl{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none}
+.sl>div{flex:none;width:100%;scroll-snap-align:start;padding:16px;min-height:300px;overflow:auto}
+.sl .big{padding:0;background:var(--tile)}
+.sl .big img{width:100%;height:100%;max-height:56vh;object-fit:contain;display:block;margin:auto}
+.sl h3{margin:0 0 8px;font-size:15px}
+.sl p{margin:0 0 14px;color:var(--muted)}
+.sl dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:8px 16px}
+.sl dt{color:var(--muted)}.sl dd{margin:0;font-weight:600}
+.sl ul{margin:0;padding-left:18px;display:grid;gap:8px}
+.nav{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-top:1px solid var(--line)}
+.dots{display:flex;gap:6px}
+.dots i{width:8px;height:8px;border-radius:50%;background:var(--line)}
+.dots i.on{background:var(--accent)}
+.nav button.ar{border:1px solid var(--line);background:none;border-radius:8px;width:36px;height:34px}
+.pf{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 16px 16px}
+.pf .add{padding:11px 20px;background:var(--accent);color:var(--accent-ink)}
+.scrim{position:fixed;inset:0;background:rgba(10,12,18,.55);z-index:20;display:none}
+.scrim.on{display:block}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(420px,100%);background:var(--surface);z-index:21;display:flex;flex-direction:column;transform:translateX(100%);transition:transform .25s;border-left:1px solid var(--line);padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+.drawer.on{transform:none}
+.dh{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid var(--line)}
+.dh h2{margin:0;font-size:18px}
+.x{border:0;background:var(--tile);width:34px;height:34px;border-radius:50%}
+.items{flex:1;overflow:auto;padding:8px 20px}
+.it{display:grid;grid-template-columns:60px 1fr auto;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line)}
+.it img{width:60px;height:60px;object-fit:cover;border-radius:8px;background:var(--tile)}
+.it h4{margin:0;font-size:14px;font-weight:600;line-height:1.3}
+.it small{color:var(--muted)}
+.qty{display:inline-flex;align-items:center;border:1px solid var(--line);border-radius:8px;margin-top:6px}
+.qty button{width:30px;height:30px;border:0;background:none;font-size:16px}
+.qty span{min-width:24px;text-align:center;font-weight:600}
+.rm{border:0;background:none;color:var(--muted);font-size:13px;text-decoration:underline}
+.sum{padding:16px 20px;border-top:1px solid var(--line);display:grid;gap:6px}
+.sum div{display:flex;justify-content:space-between}
+.sum .save{color:var(--ok)}
+.sum .tot{font-weight:800;font-size:18px;padding-top:6px}
+.sum .hint{color:var(--muted);font-size:13px}
+.co{margin-top:8px;padding:13px;border:0;border-radius:10px;background:var(--accent);color:var(--accent-ink);font-weight:700}
+.co:disabled{opacity:.45;cursor:not-allowed}
+.modal{position:fixed;inset:0;z-index:30;display:none;place-items:center;padding:20px}
+.modal.on{display:grid}
+.modal div{background:var(--surface);border-radius:16px;padding:28px;max-width:380px;text-align:center;border:1px solid var(--line)}
+.modal h2{margin:0 0 8px}
+.modal p{color:var(--muted);margin:0 0 18px}
+@media (max-width:560px){.bar{flex-wrap:wrap}.search{order:3;max-width:none;flex-basis:100%}.logo{flex:1}.grid{grid-template-columns:repeat(2,1fr);gap:12px}.card h3{font-size:14px}.add{padding:7px 10px}}
+@media (prefers-reduced-motion:reduce){.drawer{transition:none}}
+</style>
+</head>
+<body>
+<header><div class="bar">
+<h1 class="logo">Curio</h1>
+<div class="search"><input id="q" type="search" placeholder="Search products" aria-label="Search products"></div>
+<button class="bagbtn" id="open" aria-label="Open bag">Bag <span id="cnt">0</span></button>
+</div></header>
+<main>
+<section class="hero">
+<h1>Everyday carry, curated.</h1>
+<p>Phones, laptops, earbuds, bags, fragrances and fine bottles in one place. Add what you like and the bag works out your discounts.</p>
+<div class="offer"><div><b>Festive offer:</b> 5% off every order</div><div><b>Bulk offer:</b> extra 10% off with 5 or more items</div></div>
+</section>
+<div class="tabs" id="tabs" role="group" aria-label="Categories"></div>
+<div class="grid" id="grid"></div>
+<div class="empty" id="empty" hidden>No products match your search. Try a different word or category.</div>
+</main>
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer" aria-label="Shopping bag" aria-hidden="true">
+<div class="dh"><h2>Your bag</h2><button class="x" id="close" aria-label="Close bag">&times;</button></div>
+<div class="items" id="items"></div>
+<div class="sum" id="sum"></div>
+</aside>
+<div class="modal" id="modal"><div><h2>Order placed</h2><p id="mmsg"></p><button class="co" id="mok" style="width:100%">Keep shopping</button></div></div>
+<div class="pd" id="pd" role="dialog" aria-modal="true" aria-labelledby="pn"><div class="pp">
+<div class="pt"><h2 id="pn"></h2><button class="x" data-x="1" aria-label="Close details">&times;</button></div>
+<div class="sl" id="sl"></div>
+<div class="nav"><button class="ar" data-s="-1" aria-label="Previous slide">&lsaquo;</button><div class="dots" id="dots"></div><button class="ar" data-s="1" aria-label="Next slide">&rsaquo;</button></div>
+<div class="pf"><span class="price" id="pp"></span><button class="add" id="pa">Add to bag</button></div>
+</div></div>
+<script>
+const IMG={"b2": "images/b2.jpg", "b4": "images/b4.jpg", "e13": "images/e13.jpg", "e14": "images/e14.jpg", "e15": "images/e15.jpg", "e16": "images/e16.jpg", "e17": "images/e17.jpg", "f5": "images/f5.jpg", "f6": "images/f6.jpg", "f8": "images/f8.jpg", "g10": "images/g10.jpg", "g11": "images/g11.jpg", "g12": "images/g12.jpg", "g7": "images/g7.jpg", "g9": "images/g9.jpg", "l18": "images/l18.jpg", "l19": "images/l19.jpg", "l20": "images/l20.jpg", "l29": "images/l29.jpg", "l30": "images/l30.jpg", "l31": "images/l31.jpg", "l32": "images/l32.jpg", "m21": "images/m21.jpg", "m22": "images/m22.jpg", "m23": "images/m23.jpg", "m24": "images/m24.jpg", "m25": "images/m25.jpg", "m26": "images/m26.jpg", "m27": "images/m27.jpg", "m28": "images/m28.jpg", "v1": "images/v1.jpg"};
+const P=[
+["Crystal Mineral Water Set","Drinks",1499,"v1","Three faceted 500 ml bottles in green, blue and rose, made for everyday sipping.","Capacity:500 ml each|Material:Faceted BPA-free plastic|In the set:3 bottles"],
+["Aged Single Malt Decanter","Drinks",18999,"b2","A 1964 single malt in a dark glass decanter with a polished steel base.","Type:Islay single malt|Vintage:1964|Pack:1 decanter"],
+["Green Glass Distillery Bottle","Drinks",3299,"b4","A square green glass bottle with a wooden stopper and embossed gold lettering.","Material:Green glass|Stopper:Wood|Shape:Square"],
+["Midnight Blue Eau de Parfum","Perfumes",9999,"f5","A deep blue gradient bottle with a black cap, in eau de parfum strength.","Type:Eau de parfum|Size:100 ml|Scent family:Fresh woody"],
+["Classic Eau de Toilette 100 ml","Perfumes",5499,"f6","A clear glass bottle with a steel cap, packed in a grey gift box.","Type:Eau de toilette|Size:100 ml|Box:Included"],
+["Crystal Cap Perfume, Black","Perfumes",3999,"f8","A black glass bottle with a faceted crystal cap and a gold-framed label.","Type:Eau de parfum|Size:50 ml|Cap:Faceted crystal"],
+["Monogram Sling Backpack","Bags",64999,"g7","A compact sling backpack in monogram canvas with a green and red stripe.","Material:Coated canvas, leather trim|Carry:Sling or top handle|Hardware:Gold tone"],
+["Black Leather Flap Backpack","Bags",89999,"g9","A grained black leather backpack with two buckled front pockets.","Material:Grained leather|Pockets:2 front, 1 main|Closure:Flap"],
+["Monogram Zip Pouch","Bags",39999,"g10","A black monogram pouch with a zip top and a striped wrist strap.","Material:Coated canvas|Closure:Zip|Strap:Wrist strap"],
+["Brown Leather Briefcase","Bags",7999,"g11","A slim brown work briefcase with top handles and a shoulder strap.","Material:Textured leather look|Carry:Handles or shoulder strap|Fits:Up to 15-inch laptop"],
+["Textured Leather Backpack","Bags",124999,"g12","A black embossed leather backpack with a drawstring flap, buckles and side pockets.","Material:Embossed leather|Closure:Drawstring and buckles|Pockets:Front zip, 2 side"],
+["Cream Wireless Earbuds","Earbuds",4999,"e13","Cream earbuds in a gold-trimmed charging case.","Battery:Up to 6 h, case adds more|Noise control:Active|Charging:USB-C"],
+["Sky Blue ANC Earbuds","Earbuds",5999,"e14","Glossy blue stem-style earbuds with a matching case.","Battery:Up to 6 h, case adds more|Noise control:Active|Fit:Stem style"],
+["Midnight ANC Earbuds","Earbuds",5999,"e15","Mirror-finish black earbuds with a soft-touch case.","Battery:Up to 6 h, case adds more|Noise control:Active|Fit:Stem style"],
+["White Pro Earbuds","Earbuds",24900,"e16","White in-ear earbuds with silicone tips and a compact charging case.","Battery:Up to 6 h, case adds more|Noise control:Active|Tips:Silicone, 3 sizes"],
+["Graphite Wireless Earbuds","Earbuds",12999,"e17","Graphite earbuds in a rounded metallic case with color-coded sides.","Battery:Up to 5 h, case adds more|Noise control:Active|Case:Metallic finish"],
+["Red Edge Gaming Laptop","Laptops",189999,"l18","A dark gaming laptop with a red-lit rear vent and a large display.","Display:17-inch, high refresh|Memory:16 GB RAM|Storage:1 TB SSD"],
+["RTX 4050 Gaming Laptop","Laptops",84999,"l19","A 15-inch gaming laptop with a 144 Hz screen and RTX 4050 graphics.","Display:15.6-inch, 144 Hz|Graphics:RTX 4050|Storage:512 GB SSD"],
+["2-in-1 Touch Laptop","Laptops",67999,"l20","A silver convertible that folds into tent mode, with a pen included.","Display:14-inch touch|Type:2-in-1 convertible|Storage:512 GB SSD"],
+["Black Flagship Phone","Mobiles",129999,"m21","A matte black phone with a four-lens camera system.","Cameras:Quad rear|Storage:256 GB|Finish:Matte black"],
+["Burgundy Flagship Phone","Mobiles",99999,"m22","A burgundy phone with a four-lens camera system and a flat back.","Cameras:Quad rear|Storage:256 GB|Finish:Burgundy"],
+["Black Flagship Phone with Stylus","Mobiles",109999,"m23","A black phone that comes with a built-in-style stylus.","Cameras:Quad rear|Stylus:Included|Finish:Black"],
+["Titanium Gray Phone with Stylus","Mobiles",134999,"m24","A titanium gray phone with a metal frame and a matching stylus.","Cameras:Quad rear|Stylus:Included|Frame:Titanium"],
+["Pacific Blue Pro Phone","Mobiles",74999,"m25","A blue phone with a triple-lens camera and an edge-to-edge screen.","Cameras:Triple rear|Storage:128 GB|Finish:Pacific blue"],
+["Gold Pro Phone","Mobiles",54999,"m26","A gold phone with a triple-lens camera and a glass back.","Cameras:Triple rear|Storage:64 GB|Finish:Gold"],
+["Sierra Blue Pro Phone","Mobiles",89999,"m27","A light blue phone with a steel frame and a triple-lens camera.","Cameras:Triple rear|Storage:128 GB|Finish:Sierra blue"],
+["Blue Titanium Pro Phone","Mobiles",129900,"m28","A blue titanium phone with a triple-lens camera and a pill-shaped cutout.","Cameras:Triple rear|Storage:256 GB|Frame:Titanium"],
+["Silver Pro Laptop 14-inch","Laptops",199999,"l29","A thin silver laptop with a notched display and a bold wallpaper.","Display:14-inch, high resolution|Memory:16 GB RAM|Storage:512 GB SSD"],
+["Neon RGB Gaming Laptop","Laptops",149999,"l30","A gaming laptop with a color-shifting keyboard and purple under-glow.","Keyboard:RGB backlit|Memory:16 GB RAM|Storage:1 TB SSD"],
+["Gamer Laptop 16-inch RGB","Laptops",229999,"l31","A 16-inch gaming laptop with an RGB light strip along the front edge.","Display:16-inch, high refresh|Memory:32 GB RAM|Storage:1 TB SSD"],
+["Midnight Ultrabook 13-inch","Laptops",114999,"l32","A midnight blue ultrabook with a bright 13-inch display.","Display:13.6-inch|Memory:8 GB RAM|Storage:256 GB SSD"]
+].map((p,i)=>({id:i,name:p[0],cat:p[1],price:p[2],img:IMG[p[3]],d:p[4],s:p[5].split("|").map(x=>x.split(":"))}));
+const cats=["All","Mobiles","Laptops","Earbuds","Bags","Perfumes","Drinks"];
+const fmt=n=>"₹"+Math.round(n).toLocaleString("en-IN");
+const $=id=>document.getElementById(id);
+let cat="All",term="",cart={};
+try{cart=JSON.parse(localStorage.getItem("curio-cart4")||"{}")}catch(e){cart={}}
+function save(){try{localStorage.setItem("curio-cart4",JSON.stringify(cart))}catch(e){}}
+function tabs(){$("tabs").innerHTML=cats.map(c=>`<button aria-pressed="${c===cat}" data-c="${c}">${c}</button>`).join("")}
+function grid(){
+const l=P.filter(p=>(cat==="All"||p.cat===cat)&&p.name.toLowerCase().includes(term));
+$("grid").innerHTML=l.map(p=>`<article class="card"><button class="ph" data-o="${p.id}" aria-label="See details of ${p.name}"><img src="${p.img}" alt="" loading="lazy"></button><div class="in"><h3><button class="nm" data-o="${p.id}">${p.name}</button></h3><span class="cat">${p.cat}</span><div class="row"><span class="price">${fmt(p.price)}</span><button class="add" data-a="${p.id}">Add</button></div></div></article>`).join("");
+$("empty").hidden=l.length>0}
+function bag(){
+const ids=Object.keys(cart).filter(k=>cart[k]>0),n=ids.reduce((s,k)=>s+cart[k],0);
+let sub=0;ids.forEach(k=>sub+=P[k].price*cart[k]);
+const fest=sub*.05,bulk=n>=5?(sub-fest)*.10:0,tot=sub-fest-bulk;
+$("cnt").textContent=n;
+$("items").innerHTML=ids.length?ids.map(k=>{const p=P[k];return `<div class="it"><img src="${p.img}" alt=""><div><h4>${p.name}</h4><small>${fmt(p.price)}</small><br><span class="qty"><button data-m="${k}" aria-label="Decrease quantity">&minus;</button><span>${cart[k]}</span><button data-p="${k}" aria-label="Increase quantity">+</button></span></div><div style="text-align:right"><b>${fmt(p.price*cart[k])}</b><br><button class="rm" data-r="${k}">Remove</button></div></div>`}).join(""):`<div class="empty">Your bag is empty. Add a product to get started.</div>`;
+$("sum").innerHTML=ids.length?`<div><span>Subtotal</span><span>${fmt(sub)}</span></div><div class="save"><span>Festive offer (5%)</span><span>&minus;${fmt(fest)}</span></div>${bulk?`<div class="save"><span>Bulk offer (10%)</span><span>&minus;${fmt(bulk)}</span></div>`:`<div class="hint">Add ${5-n} more item${5-n>1?"s":""} to unlock the bulk offer.</div>`}<div class="tot"><span>Total</span><span>${fmt(tot)}</span></div><button class="co" id="co">Place order</button>`:"";
+save();return{n,tot}}
+function show(on){$("drawer").classList.toggle("on",on);$("scrim").classList.toggle("on",on);$("drawer").setAttribute("aria-hidden",!on);if(on)$("close").focus()}
+
+function slides(p){
+const dr=p.cat==="Drinks"?"<li>Age-restricted: buyers must meet the legal drinking age.</li>":"";
+return [`<div class="big"><img src="${p.img}" alt="${p.name}"></div>`,
+`<div><h3>About this product</h3><p>${p.d}</p><dl>${p.s.map(r=>`<dt>${r[0]}</dt><dd>${r[1]}</dd>`).join("")}<dt>Category</dt><dd>${p.cat}</dd></dl></div>`,
+`<div><h3>Delivery, offers and returns</h3><ul><li>Festive offer: 5% off your order, applied in the bag.</li><li>Bulk offer: extra 10% off when you buy 5 or more items.</li><li>Free delivery on orders above ₹999.</li><li>7-day easy returns on unopened items.</li>${dr}</ul><p style="margin-top:14px;font-size:13px">Sample details for this demo store. Replace them with your real specs before launch.</p></div>`]}
+let cur=null;
+function openP(id){cur=P[id];$("pn").textContent=cur.name;$("sl").innerHTML=slides(cur).map(h=>h.startsWith('<div class="big"')?h:h).join("");
+$("dots").innerHTML="<i></i><i></i><i></i>";$("pp").textContent=fmt(cur.price);$("pa").dataset.a=id;$("sl").scrollLeft=0;dot();$("pd").classList.add("on");$("pd").querySelector(".x").focus()}
+function dot(){const w=$("sl").clientWidth||1,i=Math.round($("sl").scrollLeft/w);[...$("dots").children].forEach((d,j)=>d.classList.toggle("on",j===i))}
+$("sl").addEventListener("scroll",dot);
+function go(d){const s=$("sl");s.scrollBy({left:d*s.clientWidth,behavior:"smooth"})}
+document.addEventListener("click",e=>{
+const t=e.target.closest("button");if(!t){if(e.target.id==="scrim")show(false);return}
+if(t.dataset.o!==undefined)openP(+t.dataset.o);
+else if(t.dataset.s)go(+t.dataset.s);
+else if(t.dataset.x)$("pd").classList.remove("on");
+else if(t.dataset.c){cat=t.dataset.c;tabs();grid()}
+else if(t.dataset.a!==undefined){const k=t.dataset.a;cart[k]=(cart[k]||0)+1;bag();t.textContent="Added";setTimeout(()=>t.textContent="Add",900)}
+else if(t.dataset.p){cart[t.dataset.p]++;bag()}
+else if(t.dataset.m){if(--cart[t.dataset.m]<=0)delete cart[t.dataset.m];bag()}
+else if(t.dataset.r){delete cart[t.dataset.r];bag()}
+else if(t.id==="open")show(true);
+else if(t.id==="close")show(false);
+else if(t.id==="co"){const r=bag();$("mmsg").textContent=`${r.n} item${r.n>1?"s":""}, total ${fmt(r.tot)}. This is a demo store, so no payment was taken.`;cart={};bag();show(false);$("modal").classList.add("on");$("mok").focus()}
+else if(t.id==="mok")$("modal").classList.remove("on")});
+$("q").addEventListener("input",e=>{term=e.target.value.trim().toLowerCase();grid()});
+document.addEventListener("keydown",e=>{if($("pd").classList.contains("on")){if(e.key==="ArrowRight")go(1);if(e.key==="ArrowLeft")go(-1)}
+if(e.key==="Escape"){$("pd").classList.remove("on");show(false);$("modal").classList.remove("on")}});
+tabs();grid();bag();
+</script>
+</body>
+</html>
