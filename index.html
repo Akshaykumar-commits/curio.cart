@@ -44,6 +44,7 @@ main{max-width:1180px;margin:0 auto;padding:28px 20px 60px}
 .add{padding:8px 14px;border:1px solid var(--accent);background:transparent;color:var(--accent);border-radius:9px;font-weight:600}
 .add:hover{background:var(--accent);color:var(--accent-ink)}
 .empty{padding:50px 0;text-align:center;color:var(--muted)}
+.grid>.empty{grid-column:1/-1}
 .card .ph{border:0;padding:0;display:block;width:100%;cursor:pointer}
 .nm{border:0;background:none;padding:0;text-align:left;font-weight:600;font-size:inherit;line-height:inherit}
 .nm:hover{color:var(--accent)}
@@ -89,6 +90,8 @@ main{max-width:1180px;margin:0 auto;padding:28px 20px 60px}
 .sum .save{color:var(--ok)}
 .sum .tot{font-weight:800;font-size:18px;padding-top:6px}
 .sum .hint{color:var(--muted);font-size:13px}
+.sum .err{color:#e5484d;font-size:13px;display:block}
+.cn{width:100%;margin-top:6px;padding:11px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg)}
 .co{margin-top:8px;padding:13px;border:0;border-radius:10px;background:var(--accent);color:var(--accent-ink);font-weight:700}
 .co:disabled{opacity:.45;cursor:not-allowed}
 .modal{position:fixed;inset:0;z-index:30;display:none;place-items:center;padding:20px}
@@ -113,7 +116,7 @@ main{max-width:1180px;margin:0 auto;padding:28px 20px 60px}
 <div class="offer"><div><b>Festive offer:</b> 5% off every order</div><div><b>Bulk offer:</b> extra 10% off with 5 or more items</div></div>
 </section>
 <div class="tabs" id="tabs" role="group" aria-label="Categories"></div>
-<div class="grid" id="grid"></div>
+<div class="grid" id="grid"><div class="empty">Loading products…</div></div>
 <div class="empty" id="empty" hidden>No products match your search. Try a different word or category.</div>
 </main>
 <div class="scrim" id="scrim"></div>
@@ -130,44 +133,10 @@ main{max-width:1180px;margin:0 auto;padding:28px 20px 60px}
 <div class="pf"><span class="price" id="pp"></span><button class="add" id="pa">Add to bag</button></div>
 </div></div>
 <script>
-const IMG={"b2": "images/b2.jpg", "b4": "images/b4.jpg", "e13": "images/e13.jpg", "e14": "images/e14.jpg", "e15": "images/e15.jpg", "e16": "images/e16.jpg", "e17": "images/e17.jpg", "f5": "images/f5.jpg", "f6": "images/f6.jpg", "f8": "images/f8.jpg", "g10": "images/g10.jpg", "g11": "images/g11.jpg", "g12": "images/g12.jpg", "g7": "images/g7.jpg", "g9": "images/g9.jpg", "l18": "images/l18.jpg", "l19": "images/l19.jpg", "l20": "images/l20.jpg", "l29": "images/l29.jpg", "l30": "images/l30.jpg", "l31": "images/l31.jpg", "l32": "images/l32.jpg", "m21": "images/m21.jpg", "m22": "images/m22.jpg", "m23": "images/m23.jpg", "m24": "images/m24.jpg", "m25": "images/m25.jpg", "m26": "images/m26.jpg", "m27": "images/m27.jpg", "m28": "images/m28.jpg", "v1": "images/v1.jpg"};
-const P=[
-["Crystal Mineral Water Set","Drinks",1499,"v1","Three faceted 500 ml bottles in green, blue and rose, made for everyday sipping.","Capacity:500 ml each|Material:Faceted BPA-free plastic|In the set:3 bottles"],
-["Aged Single Malt Decanter","Drinks",18999,"b2","A 1964 single malt in a dark glass decanter with a polished steel base.","Type:Islay single malt|Vintage:1964|Pack:1 decanter"],
-["Green Glass Distillery Bottle","Drinks",3299,"b4","A square green glass bottle with a wooden stopper and embossed gold lettering.","Material:Green glass|Stopper:Wood|Shape:Square"],
-["Midnight Blue Eau de Parfum","Perfumes",9999,"f5","A deep blue gradient bottle with a black cap, in eau de parfum strength.","Type:Eau de parfum|Size:100 ml|Scent family:Fresh woody"],
-["Classic Eau de Toilette 100 ml","Perfumes",5499,"f6","A clear glass bottle with a steel cap, packed in a grey gift box.","Type:Eau de toilette|Size:100 ml|Box:Included"],
-["Crystal Cap Perfume, Black","Perfumes",3999,"f8","A black glass bottle with a faceted crystal cap and a gold-framed label.","Type:Eau de parfum|Size:50 ml|Cap:Faceted crystal"],
-["Monogram Sling Backpack","Bags",64999,"g7","A compact sling backpack in monogram canvas with a green and red stripe.","Material:Coated canvas, leather trim|Carry:Sling or top handle|Hardware:Gold tone"],
-["Black Leather Flap Backpack","Bags",89999,"g9","A grained black leather backpack with two buckled front pockets.","Material:Grained leather|Pockets:2 front, 1 main|Closure:Flap"],
-["Monogram Zip Pouch","Bags",39999,"g10","A black monogram pouch with a zip top and a striped wrist strap.","Material:Coated canvas|Closure:Zip|Strap:Wrist strap"],
-["Brown Leather Briefcase","Bags",7999,"g11","A slim brown work briefcase with top handles and a shoulder strap.","Material:Textured leather look|Carry:Handles or shoulder strap|Fits:Up to 15-inch laptop"],
-["Textured Leather Backpack","Bags",124999,"g12","A black embossed leather backpack with a drawstring flap, buckles and side pockets.","Material:Embossed leather|Closure:Drawstring and buckles|Pockets:Front zip, 2 side"],
-["Cream Wireless Earbuds","Earbuds",4999,"e13","Cream earbuds in a gold-trimmed charging case.","Battery:Up to 6 h, case adds more|Noise control:Active|Charging:USB-C"],
-["Sky Blue ANC Earbuds","Earbuds",5999,"e14","Glossy blue stem-style earbuds with a matching case.","Battery:Up to 6 h, case adds more|Noise control:Active|Fit:Stem style"],
-["Midnight ANC Earbuds","Earbuds",5999,"e15","Mirror-finish black earbuds with a soft-touch case.","Battery:Up to 6 h, case adds more|Noise control:Active|Fit:Stem style"],
-["White Pro Earbuds","Earbuds",24900,"e16","White in-ear earbuds with silicone tips and a compact charging case.","Battery:Up to 6 h, case adds more|Noise control:Active|Tips:Silicone, 3 sizes"],
-["Graphite Wireless Earbuds","Earbuds",12999,"e17","Graphite earbuds in a rounded metallic case with color-coded sides.","Battery:Up to 5 h, case adds more|Noise control:Active|Case:Metallic finish"],
-["Red Edge Gaming Laptop","Laptops",189999,"l18","A dark gaming laptop with a red-lit rear vent and a large display.","Display:17-inch, high refresh|Memory:16 GB RAM|Storage:1 TB SSD"],
-["RTX 4050 Gaming Laptop","Laptops",84999,"l19","A 15-inch gaming laptop with a 144 Hz screen and RTX 4050 graphics.","Display:15.6-inch, 144 Hz|Graphics:RTX 4050|Storage:512 GB SSD"],
-["2-in-1 Touch Laptop","Laptops",67999,"l20","A silver convertible that folds into tent mode, with a pen included.","Display:14-inch touch|Type:2-in-1 convertible|Storage:512 GB SSD"],
-["Black Flagship Phone","Mobiles",129999,"m21","A matte black phone with a four-lens camera system.","Cameras:Quad rear|Storage:256 GB|Finish:Matte black"],
-["Burgundy Flagship Phone","Mobiles",99999,"m22","A burgundy phone with a four-lens camera system and a flat back.","Cameras:Quad rear|Storage:256 GB|Finish:Burgundy"],
-["Black Flagship Phone with Stylus","Mobiles",109999,"m23","A black phone that comes with a built-in-style stylus.","Cameras:Quad rear|Stylus:Included|Finish:Black"],
-["Titanium Gray Phone with Stylus","Mobiles",134999,"m24","A titanium gray phone with a metal frame and a matching stylus.","Cameras:Quad rear|Stylus:Included|Frame:Titanium"],
-["Pacific Blue Pro Phone","Mobiles",74999,"m25","A blue phone with a triple-lens camera and an edge-to-edge screen.","Cameras:Triple rear|Storage:128 GB|Finish:Pacific blue"],
-["Gold Pro Phone","Mobiles",54999,"m26","A gold phone with a triple-lens camera and a glass back.","Cameras:Triple rear|Storage:64 GB|Finish:Gold"],
-["Sierra Blue Pro Phone","Mobiles",89999,"m27","A light blue phone with a steel frame and a triple-lens camera.","Cameras:Triple rear|Storage:128 GB|Finish:Sierra blue"],
-["Blue Titanium Pro Phone","Mobiles",129900,"m28","A blue titanium phone with a triple-lens camera and a pill-shaped cutout.","Cameras:Triple rear|Storage:256 GB|Frame:Titanium"],
-["Silver Pro Laptop 14-inch","Laptops",199999,"l29","A thin silver laptop with a notched display and a bold wallpaper.","Display:14-inch, high resolution|Memory:16 GB RAM|Storage:512 GB SSD"],
-["Neon RGB Gaming Laptop","Laptops",149999,"l30","A gaming laptop with a color-shifting keyboard and purple under-glow.","Keyboard:RGB backlit|Memory:16 GB RAM|Storage:1 TB SSD"],
-["Gamer Laptop 16-inch RGB","Laptops",229999,"l31","A 16-inch gaming laptop with an RGB light strip along the front edge.","Display:16-inch, high refresh|Memory:32 GB RAM|Storage:1 TB SSD"],
-["Midnight Ultrabook 13-inch","Laptops",114999,"l32","A midnight blue ultrabook with a bright 13-inch display.","Display:13.6-inch|Memory:8 GB RAM|Storage:256 GB SSD"]
-].map((p,i)=>({id:i,name:p[0],cat:p[1],price:p[2],img:IMG[p[3]],d:p[4],s:p[5].split("|").map(x=>x.split(":"))}));
 const cats=["All","Mobiles","Laptops","Earbuds","Bags","Perfumes","Drinks"];
 const fmt=n=>"₹"+Math.round(n).toLocaleString("en-IN");
 const $=id=>document.getElementById(id);
-let cat="All",term="",cart={};
+let P=[],PM={},cat="All",term="",cart={},custName="",cur=null;
 try{cart=JSON.parse(localStorage.getItem("curio-cart4")||"{}")}catch(e){cart={}}
 function save(){try{localStorage.setItem("curio-cart4",JSON.stringify(cart))}catch(e){}}
 function tabs(){$("tabs").innerHTML=cats.map(c=>`<button aria-pressed="${c===cat}" data-c="${c}">${c}</button>`).join("")}
@@ -176,12 +145,14 @@ const l=P.filter(p=>(cat==="All"||p.cat===cat)&&p.name.toLowerCase().includes(te
 $("grid").innerHTML=l.map(p=>`<article class="card"><button class="ph" data-o="${p.id}" aria-label="See details of ${p.name}"><img src="${p.img}" alt="" loading="lazy"></button><div class="in"><h3><button class="nm" data-o="${p.id}">${p.name}</button></h3><span class="cat">${p.cat}</span><div class="row"><span class="price">${fmt(p.price)}</span><button class="add" data-a="${p.id}">Add</button></div></div></article>`).join("");
 $("empty").hidden=l.length>0}
 function bag(){
-const ids=Object.keys(cart).filter(k=>cart[k]>0),n=ids.reduce((s,k)=>s+cart[k],0);
-let sub=0;ids.forEach(k=>sub+=P[k].price*cart[k]);
+const ids=Object.keys(cart).filter(k=>cart[k]>0&&PM[k]);
+const n=ids.reduce((s,k)=>s+cart[k],0);
+let sub=0;ids.forEach(k=>sub+=PM[k].price*cart[k]);
 const fest=sub*.05,bulk=n>=5?(sub-fest)*.10:0,tot=sub-fest-bulk;
 $("cnt").textContent=n;
-$("items").innerHTML=ids.length?ids.map(k=>{const p=P[k];return `<div class="it"><img src="${p.img}" alt=""><div><h4>${p.name}</h4><small>${fmt(p.price)}</small><br><span class="qty"><button data-m="${k}" aria-label="Decrease quantity">&minus;</button><span>${cart[k]}</span><button data-p="${k}" aria-label="Increase quantity">+</button></span></div><div style="text-align:right"><b>${fmt(p.price*cart[k])}</b><br><button class="rm" data-r="${k}">Remove</button></div></div>`}).join(""):`<div class="empty">Your bag is empty. Add a product to get started.</div>`;
-$("sum").innerHTML=ids.length?`<div><span>Subtotal</span><span>${fmt(sub)}</span></div><div class="save"><span>Festive offer (5%)</span><span>&minus;${fmt(fest)}</span></div>${bulk?`<div class="save"><span>Bulk offer (10%)</span><span>&minus;${fmt(bulk)}</span></div>`:`<div class="hint">Add ${5-n} more item${5-n>1?"s":""} to unlock the bulk offer.</div>`}<div class="tot"><span>Total</span><span>${fmt(tot)}</span></div><button class="co" id="co">Place order</button>`:"";
+$("items").innerHTML=ids.length?ids.map(k=>{const p=PM[k];return `<div class="it"><img src="${p.img}" alt=""><div><h4>${p.name}</h4><small>${fmt(p.price)}</small><br><span class="qty"><button data-m="${k}" aria-label="Decrease quantity">&minus;</button><span>${cart[k]}</span><button data-p="${k}" aria-label="Increase quantity">+</button></span></div><div style="text-align:right"><b>${fmt(p.price*cart[k])}</b><br><button class="rm" data-r="${k}">Remove</button></div></div>`}).join(""):`<div class="empty">Your bag is empty. Add a product to get started.</div>`;
+$("sum").innerHTML=ids.length?`<div><span>Subtotal</span><span>${fmt(sub)}</span></div><div class="save"><span>Festive offer (5%)</span><span>&minus;${fmt(fest)}</span></div>${bulk?`<div class="save"><span>Bulk offer (10%)</span><span>&minus;${fmt(bulk)}</span></div>`:`<div class="hint">Add ${5-n} more item${5-n>1?"s":""} to unlock the bulk offer.</div>`}<div class="tot"><span>Total</span><span>${fmt(tot)}</span></div><input class="cn" id="cname" maxlength="60" placeholder="Your name for the order" autocomplete="name" aria-label="Your name"><span class="err" id="cerr" role="alert"></span><button class="co" id="co">Place order</button>`:"";
+if($("cname"))$("cname").value=custName;
 save();return{n,tot}}
 function show(on){$("drawer").classList.toggle("on",on);$("scrim").classList.toggle("on",on);$("drawer").setAttribute("aria-hidden",!on);if(on)$("close").focus()}
 
@@ -190,30 +161,56 @@ const dr=p.cat==="Drinks"?"<li>Age-restricted: buyers must meet the legal drinki
 return [`<div class="big"><img src="${p.img}" alt="${p.name}"></div>`,
 `<div><h3>About this product</h3><p>${p.d}</p><dl>${p.s.map(r=>`<dt>${r[0]}</dt><dd>${r[1]}</dd>`).join("")}<dt>Category</dt><dd>${p.cat}</dd></dl></div>`,
 `<div><h3>Delivery, offers and returns</h3><ul><li>Festive offer: 5% off your order, applied in the bag.</li><li>Bulk offer: extra 10% off when you buy 5 or more items.</li><li>Free delivery on orders above ₹999.</li><li>7-day easy returns on unopened items.</li>${dr}</ul><p style="margin-top:14px;font-size:13px">Sample details for this demo store. Replace them with your real specs before launch.</p></div>`]}
-let cur=null;
-function openP(id){cur=P[id];$("pn").textContent=cur.name;$("sl").innerHTML=slides(cur).map(h=>h.startsWith('<div class="big"')?h:h).join("");
+function openP(id){cur=PM[id];$("pn").textContent=cur.name;$("sl").innerHTML=slides(cur).join("");
 $("dots").innerHTML="<i></i><i></i><i></i>";$("pp").textContent=fmt(cur.price);$("pa").dataset.a=id;$("sl").scrollLeft=0;dot();$("pd").classList.add("on");$("pd").querySelector(".x").focus()}
 function dot(){const w=$("sl").clientWidth||1,i=Math.round($("sl").scrollLeft/w);[...$("dots").children].forEach((d,j)=>d.classList.toggle("on",j===i))}
 $("sl").addEventListener("scroll",dot);
 function go(d){const s=$("sl");s.scrollBy({left:d*s.clientWidth,behavior:"smooth"})}
+
+async function placeOrder(btn){
+const items=Object.keys(cart).filter(k=>cart[k]>0&&PM[k]).map(k=>({id:+k,qty:cart[k]}));
+const name=custName.trim();
+if(!name){$("cerr").textContent="Please enter your name.";$("cname").focus();return}
+btn.disabled=true;btn.textContent="Placing order…";$("cerr").textContent="";
+try{
+const r=await fetch("/api/orders",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({name,items})});
+const d=await r.json().catch(()=>({}));
+if(!r.ok)throw new Error(typeof d.detail==="string"?d.detail:"Could not place the order. Please try again.");
+$("mmsg").textContent=`Thank you, ${d.name}! Order #${d.id}: ${d.items_count} item${d.items_count>1?"s":""}, total ${fmt(d.total)}. This is a demo store, so no payment was taken.`;
+cart={};custName="";bag();show(false);$("modal").classList.add("on");$("mok").focus();
+}catch(e){
+if($("cerr")){$("cerr").textContent=e.message;btn.disabled=false;btn.textContent="Place order"}
+}}
+
 document.addEventListener("click",e=>{
 const t=e.target.closest("button");if(!t){if(e.target.id==="scrim")show(false);return}
 if(t.dataset.o!==undefined)openP(+t.dataset.o);
 else if(t.dataset.s)go(+t.dataset.s);
 else if(t.dataset.x)$("pd").classList.remove("on");
 else if(t.dataset.c){cat=t.dataset.c;tabs();grid()}
-else if(t.dataset.a!==undefined){const k=t.dataset.a;cart[k]=(cart[k]||0)+1;bag();t.textContent="Added";setTimeout(()=>t.textContent="Add",900)}
+else if(t.dataset.a!==undefined){const k=t.dataset.a;cart[k]=(cart[k]||0)+1;bag();t.textContent="Added";setTimeout(()=>t.textContent=t.id==="pa"?"Add to bag":"Add",900)}
 else if(t.dataset.p){cart[t.dataset.p]++;bag()}
 else if(t.dataset.m){if(--cart[t.dataset.m]<=0)delete cart[t.dataset.m];bag()}
 else if(t.dataset.r){delete cart[t.dataset.r];bag()}
 else if(t.id==="open")show(true);
 else if(t.id==="close")show(false);
-else if(t.id==="co"){const r=bag();$("mmsg").textContent=`${r.n} item${r.n>1?"s":""}, total ${fmt(r.tot)}. This is a demo store, so no payment was taken.`;cart={};bag();show(false);$("modal").classList.add("on");$("mok").focus()}
+else if(t.id==="co")placeOrder(t);
 else if(t.id==="mok")$("modal").classList.remove("on")});
 $("q").addEventListener("input",e=>{term=e.target.value.trim().toLowerCase();grid()});
+document.addEventListener("input",e=>{if(e.target.id==="cname")custName=e.target.value});
 document.addEventListener("keydown",e=>{if($("pd").classList.contains("on")){if(e.key==="ArrowRight")go(1);if(e.key==="ArrowLeft")go(-1)}
 if(e.key==="Escape"){$("pd").classList.remove("on");show(false);$("modal").classList.remove("on")}});
-tabs();grid();bag();
+
+async function init(){
+tabs();
+try{
+const r=await fetch("/api/products");
+if(!r.ok)throw new Error("bad response");
+P=await r.json();
+P.forEach(p=>PM[p.id]=p);
+}catch(e){$("grid").innerHTML='<div class="empty">Could not load products. Please refresh the page.</div>';return}
+grid();bag()}
+init();
 </script>
 </body>
 </html>
