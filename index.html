@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Curio Store</title>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f5f6f8;--surface:#fff;--ink:#14171f;--muted:#667085;--line:#e3e6ec;--tile:#eceef3;--accent:#3a3fd1;--accent-ink:#fff;--ok:#15803d;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1116;--surface:#181b23;--ink:#eef0f5;--muted:#9aa3b5;--line:#2a2f3b;--tile:#222632;--accent:#8b90ff;--accent-ink:#101224;--ok:#4ade80;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0f1116;--surface:#181b23;--ink:#eef0f5;--muted:#9aa3b5;--line:#2a2f3b;--tile:#222632;--accent:#8b90ff;--accent-ink:#101224;--ok:#4ade80;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 15px/1.5 Manrope,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--surface);border-bottom:1px solid var(--line)}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--surface);z-index:10}
+.bar{max-width:1180px;margin:0 auto;padding:12px 20px;display:flex;align-items:center;gap:16px}
+.logo{font-weight:800;font-size:22px;letter-spacing:-.02em;margin:0}
+.search{flex:1;max-width:460px;margin-left:auto}
+.search input{width:100%;padding:10px 14px;border:1px solid var(--line);border-radius:10px;background:var(--bg)}
+.bagbtn{display:flex;align-items:center;gap:8px;padding:10px 16px;border:0;border-radius:10px;background:var(--accent);color:var(--accent-ink);font-weight:600}
+.bagbtn span{background:var(--accent-ink);color:var(--accent);border-radius:99px;min-width:22px;padding:0 6px;text-align:center;font-size:13px}
+main{max-width:1180px;margin:0 auto;padding:28px 20px 60px}
+.hero h1{font-size:clamp(28px,5vw,44px);line-height:1.1;letter-spacing:-.03em;margin:0 0 8px;font-weight:800}
+.hero p{margin:0;color:var(--muted);max-width:60ch}
+.offer{display:flex;flex-wrap:wrap;gap:10px;margin:18px 0 6px}
+.offer div{padding:8px 14px;border:1px solid var(--line);border-radius:10px;background:var(--surface);font-size:14px}
+.offer b{color:var(--ok)}
+.tabs{display:flex;gap:8px;overflow-x:auto;padding:16px 0;scrollbar-width:none}
+.tabs button{flex:none;padding:8px 16px;border:1px solid var(--line);border-radius:99px;background:var(--surface);font-weight:500}
+.tabs button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:18px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden;display:flex;flex-direction:column}
+.card .ph{aspect-ratio:4/5;background:var(--tile);overflow:hidden}
+.card img{width:100%;height:100%;object-fit:cover;display:block}
+.card .in{padding:12px 14px 14px;display:flex;flex-direction:column;gap:4px;flex:1}
+.card h3{margin:0;font-size:15px;font-weight:600;line-height:1.3}
+.card .cat{color:var(--muted);font-size:13px}
+.card .row{margin-top:auto;padding-top:10px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.price{font-weight:800;font-size:17px}
+.add{padding:8px 14px;border:1px solid var(--accent);background:transparent;color:var(--accent);border-radius:9px;font-weight:600}
+.add:hover{background:var(--accent);color:var(--accent-ink)}
+.empty{padding:50px 0;text-align:center;color:var(--muted)}
+.grid>.empty{grid-column:1/-1}
+.card .ph{border:0;padding:0;display:block;width:100%;cursor:pointer}
+.nm{border:0;background:none;padding:0;text-align:left;font-weight:600;font-size:inherit;line-height:inherit}
+.nm:hover{color:var(--accent)}
+.pd{position:fixed;inset:0;z-index:30;display:none;place-items:center;padding:16px;background:rgba(10,12,18,.6)}
+.pd.on{display:grid}
+.pp{background:var(--surface);border:1px solid var(--line);border-radius:16px;width:min(520px,100%);max-height:100%;overflow:hidden;display:flex;flex-direction:column}
+.pt{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid var(--line)}
+.pt h2{margin:0;font-size:17px;line-height:1.3}
+.sl{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none}
+.sl>div{flex:none;width:100%;scroll-snap-align:start;padding:16px;min-height:300px;overflow:auto}
+.sl .big{padding:0;background:var(--tile)}
+.sl .big img{width:100%;height:100%;max-height:56vh;object-fit:contain;display:block;margin:auto}
+.sl h3{margin:0 0 8px;font-size:15px}
+.sl p{margin:0 0 14px;color:var(--muted)}
+.sl dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:8px 16px}
+.sl dt{color:var(--muted)}.sl dd{margin:0;font-weight:600}
+.sl ul{margin:0;padding-left:18px;display:grid;gap:8px}
+.nav{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-top:1px solid var(--line)}
+.dots{display:flex;gap:6px}
+.dots i{width:8px;height:8px;border-radius:50%;background:var(--line)}
+.dots i.on{background:var(--accent)}
+.nav button.ar{border:1px solid var(--line);background:none;border-radius:8px;width:36px;height:34px}
+.pf{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 16px 16px}
+.pf .add{padding:11px 20px;background:var(--accent);color:var(--accent-ink)}
+.scrim{position:fixed;inset:0;background:rgba(10,12,18,.55);z-index:20;display:none}
+.scrim.on{display:block}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(420px,100%);background:var(--surface);z-index:21;display:flex;flex-direction:column;transform:translateX(100%);transition:transform .25s;border-left:1px solid var(--line);padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+.drawer.on{transform:none}
+.dh{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid var(--line)}
+.dh h2{margin:0;font-size:18px}
+.x{border:0;background:var(--tile);width:34px;height:34px;border-radius:50%}
+.items{flex:1;overflow:auto;padding:8px 20px}
+.it{display:grid;grid-template-columns:60px 1fr auto;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line)}
+.it img{width:60px;height:60px;object-fit:cover;border-radius:8px;background:var(--tile)}
+.it h4{margin:0;font-size:14px;font-weight:600;line-height:1.3}
+.it small{color:var(--muted)}
+.qty{display:inline-flex;align-items:center;border:1px solid var(--line);border-radius:8px;margin-top:6px}
+.qty button{width:30px;height:30px;border:0;background:none;font-size:16px}
+.qty span{min-width:24px;text-align:center;font-weight:600}
+.rm{border:0;background:none;color:var(--muted);font-size:13px;text-decoration:underline}
+.sum{padding:16px 20px;border-top:1px solid var(--line);display:grid;gap:6px}
+.sum div{display:flex;justify-content:space-between}
+.sum .save{color:var(--ok)}
+.sum .tot{font-weight:800;font-size:18px;padding-top:6px}
+.sum .hint{color:var(--muted);font-size:13px}
+.sum .err{color:#e5484d;font-size:13px;display:block}
+.cn{width:100%;margin-top:6px;padding:11px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg)}
+.co{margin-top:8px;padding:13px;border:0;border-radius:10px;background:var(--accent);color:var(--accent-ink);font-weight:700}
+.co:disabled{opacity:.45;cursor:not-allowed}
+.modal{position:fixed;inset:0;z-index:30;display:none;place-items:center;padding:20px}
+.modal.on{display:grid}
+.modal div{background:var(--surface);border-radius:16px;padding:28px;max-width:380px;text-align:center;border:1px solid var(--line)}
+.modal h2{margin:0 0 8px}
+.modal p{color:var(--muted);margin:0 0 18px}
+@media (max-width:560px){.bar{flex-wrap:wrap}.search{order:3;max-width:none;flex-basis:100%}.logo{flex:1}.grid{grid-template-columns:repeat(2,1fr);gap:12px}.card h3{font-size:14px}.add{padding:7px 10px}}
+@media (prefers-reduced-motion:reduce){.drawer{transition:none}}
+</style>
+</head>
+<body>
+<header><div class="bar">
+<h1 class="logo">Curio</h1>
+<div class="search"><input id="q" type="search" placeholder="Search products" aria-label="Search products"></div>
+<button class="bagbtn" id="open" aria-label="Open bag">Bag <span id="cnt">0</span></button>
+</div></header>
+<main>
+<section class="hero">
+<h1>Everyday carry, curated.</h1>
+<p>Phones, laptops, earbuds, bags, fragrances and fine bottles in one place. Add what you like and the bag works out your discounts.</p>
+<div class="offer"><div><b>Festive offer:</b> 5% off every order</div><div><b>Bulk offer:</b> extra 10% off with 5 or more items</div></div>
+</section>
+<div class="tabs" id="tabs" role="group" aria-label="Categories"></div>
+<div class="grid" id="grid"><div class="empty">Loading products…</div></div>
+<div class="empty" id="empty" hidden>No products match your search. Try a different word or category.</div>
+</main>
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer" aria-label="Shopping bag" aria-hidden="true">
+<div class="dh"><h2>Your bag</h2><button class="x" id="close" aria-label="Close bag">&times;</button></div>
+<div class="items" id="items"></div>
+<div class="sum" id="sum"></div>
+</aside>
+<div class="modal" id="modal"><div><h2>Order placed</h2><p id="mmsg"></p><button class="co" id="mok" style="width:100%">Keep shopping</button></div></div>
+<div class="pd" id="pd" role="dialog" aria-modal="true" aria-labelledby="pn"><div class="pp">
+<div class="pt"><h2 id="pn"></h2><button class="x" data-x="1" aria-label="Close details">&times;</button></div>
+<div class="sl" id="sl"></div>
+<div class="nav"><button class="ar" data-s="-1" aria-label="Previous slide">&lsaquo;</button><div class="dots" id="dots"></div><button class="ar" data-s="1" aria-label="Next slide">&rsaquo;</button></div>
+<div class="pf"><span class="price" id="pp"></span><button class="add" id="pa">Add to bag</button></div>
+</div></div>
+<script>
+const cats=["All","Mobiles","Laptops","Earbuds","Bags","Perfumes","Drinks"];
+const fmt=n=>"₹"+Math.round(n).toLocaleString("en-IN");
+const $=id=>document.getElementById(id);
+let P=[],PM={},cat="All",term="",cart={},custName="",cur=null;
+try{cart=JSON.parse(localStorage.getItem("curio-cart4")||"{}")}catch(e){cart={}}
+function save(){try{localStorage.setItem("curio-cart4",JSON.stringify(cart))}catch(e){}}
+function tabs(){$("tabs").innerHTML=cats.map(c=>`<button aria-pressed="${c===cat}" data-c="${c}">${c}</button>`).join("")}
+function grid(){
+const l=P.filter(p=>(cat==="All"||p.cat===cat)&&p.name.toLowerCase().includes(term));
+$("grid").innerHTML=l.map(p=>`<article class="card"><button class="ph" data-o="${p.id}" aria-label="See details of ${p.name}"><img src="${p.img}" alt="" loading="lazy"></button><div class="in"><h3><button class="nm" data-o="${p.id}">${p.name}</button></h3><span class="cat">${p.cat}</span><div class="row"><span class="price">${fmt(p.price)}</span><button class="add" data-a="${p.id}">Add</button></div></div></article>`).join("");
+$("empty").hidden=l.length>0}
+function bag(){
+const ids=Object.keys(cart).filter(k=>cart[k]>0&&PM[k]);
+const n=ids.reduce((s,k)=>s+cart[k],0);
+let sub=0;ids.forEach(k=>sub+=PM[k].price*cart[k]);
+const fest=sub*.05,bulk=n>=5?(sub-fest)*.10:0,tot=sub-fest-bulk;
+$("cnt").textContent=n;
+$("items").innerHTML=ids.length?ids.map(k=>{const p=PM[k];return `<div class="it"><img src="${p.img}" alt=""><div><h4>${p.name}</h4><small>${fmt(p.price)}</small><br><span class="qty"><button data-m="${k}" aria-label="Decrease quantity">&minus;</button><span>${cart[k]}</span><button data-p="${k}" aria-label="Increase quantity">+</button></span></div><div style="text-align:right"><b>${fmt(p.price*cart[k])}</b><br><button class="rm" data-r="${k}">Remove</button></div></div>`}).join(""):`<div class="empty">Your bag is empty. Add a product to get started.</div>`;
+$("sum").innerHTML=ids.length?`<div><span>Subtotal</span><span>${fmt(sub)}</span></div><div class="save"><span>Festive offer (5%)</span><span>&minus;${fmt(fest)}</span></div>${bulk?`<div class="save"><span>Bulk offer (10%)</span><span>&minus;${fmt(bulk)}</span></div>`:`<div class="hint">Add ${5-n} more item${5-n>1?"s":""} to unlock the bulk offer.</div>`}<div class="tot"><span>Total</span><span>${fmt(tot)}</span></div><input class="cn" id="cname" maxlength="60" placeholder="Your name for the order" autocomplete="name" aria-label="Your name"><span class="err" id="cerr" role="alert"></span><button class="co" id="co">Place order</button>`:"";
+if($("cname"))$("cname").value=custName;
+save();return{n,tot}}
+function show(on){$("drawer").classList.toggle("on",on);$("scrim").classList.toggle("on",on);$("drawer").setAttribute("aria-hidden",!on);if(on)$("close").focus()}
+
+function slides(p){
+const dr=p.cat==="Drinks"?"<li>Age-restricted: buyers must meet the legal drinking age.</li>":"";
+return [`<div class="big"><img src="${p.img}" alt="${p.name}"></div>`,
+`<div><h3>About this product</h3><p>${p.d}</p><dl>${p.s.map(r=>`<dt>${r[0]}</dt><dd>${r[1]}</dd>`).join("")}<dt>Category</dt><dd>${p.cat}</dd></dl></div>`,
+`<div><h3>Delivery, offers and returns</h3><ul><li>Festive offer: 5% off your order, applied in the bag.</li><li>Bulk offer: extra 10% off when you buy 5 or more items.</li><li>Free delivery on orders above ₹999.</li><li>7-day easy returns on unopened items.</li>${dr}</ul><p style="margin-top:14px;font-size:13px">Sample details for this demo store. Replace them with your real specs before launch.</p></div>`]}
+function openP(id){cur=PM[id];$("pn").textContent=cur.name;$("sl").innerHTML=slides(cur).join("");
+$("dots").innerHTML="<i></i><i></i><i></i>";$("pp").textContent=fmt(cur.price);$("pa").dataset.a=id;$("sl").scrollLeft=0;dot();$("pd").classList.add("on");$("pd").querySelector(".x").focus()}
+function dot(){const w=$("sl").clientWidth||1,i=Math.round($("sl").scrollLeft/w);[...$("dots").children].forEach((d,j)=>d.classList.toggle("on",j===i))}
+$("sl").addEventListener("scroll",dot);
+function go(d){const s=$("sl");s.scrollBy({left:d*s.clientWidth,behavior:"smooth"})}
+
+async function placeOrder(btn){
+const items=Object.keys(cart).filter(k=>cart[k]>0&&PM[k]).map(k=>({id:+k,qty:cart[k]}));
+const name=custName.trim();
+if(!name){$("cerr").textContent="Please enter your name.";$("cname").focus();return}
+btn.disabled=true;btn.textContent="Placing order…";$("cerr").textContent="";
+try{
+const r=await fetch("/api/orders",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({name,items})});
+const d=await r.json().catch(()=>({}));
+if(!r.ok)throw new Error(typeof d.detail==="string"?d.detail:"Could not place the order. Please try again.");
+$("mmsg").textContent=`Thank you, ${d.name}! Order #${d.id}: ${d.items_count} item${d.items_count>1?"s":""}, total ${fmt(d.total)}. This is a demo store, so no payment was taken.`;
+cart={};custName="";bag();show(false);$("modal").classList.add("on");$("mok").focus();
+}catch(e){
+if($("cerr")){$("cerr").textContent=e.message;btn.disabled=false;btn.textContent="Place order"}
+}}
+
+document.addEventListener("click",e=>{
+const t=e.target.closest("button");if(!t){if(e.target.id==="scrim")show(false);return}
+if(t.dataset.o!==undefined)openP(+t.dataset.o);
+else if(t.dataset.s)go(+t.dataset.s);
+else if(t.dataset.x)$("pd").classList.remove("on");
+else if(t.dataset.c){cat=t.dataset.c;tabs();grid()}
+else if(t.dataset.a!==undefined){const k=t.dataset.a;cart[k]=(cart[k]||0)+1;bag();t.textContent="Added";setTimeout(()=>t.textContent=t.id==="pa"?"Add to bag":"Add",900)}
+else if(t.dataset.p){cart[t.dataset.p]++;bag()}
+else if(t.dataset.m){if(--cart[t.dataset.m]<=0)delete cart[t.dataset.m];bag()}
+else if(t.dataset.r){delete cart[t.dataset.r];bag()}
+else if(t.id==="open")show(true);
+else if(t.id==="close")show(false);
+else if(t.id==="co")placeOrder(t);
+else if(t.id==="mok")$("modal").classList.remove("on")});
+$("q").addEventListener("input",e=>{term=e.target.value.trim().toLowerCase();grid()});
+document.addEventListener("input",e=>{if(e.target.id==="cname")custName=e.target.value});
+document.addEventListener("keydown",e=>{if($("pd").classList.contains("on")){if(e.key==="ArrowRight")go(1);if(e.key==="ArrowLeft")go(-1)}
+if(e.key==="Escape"){$("pd").classList.remove("on");show(false);$("modal").classList.remove("on")}});
+
+async function init(){
+tabs();
+try{
+const r=await fetch("/api/products");
+if(!r.ok)throw new Error("bad response");
+P=await r.json();
+P.forEach(p=>PM[p.id]=p);
+}catch(e){$("grid").innerHTML='<div class="empty">Could not load products. Please refresh the page.</div>';return}
+grid();bag()}
+init();
+</script>
+</body>
+</html>
